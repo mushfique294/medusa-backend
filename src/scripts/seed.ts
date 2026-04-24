@@ -305,7 +305,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
 
   if (!existingShippingOptions || existingShippingOptions.length === 0) {
     // We need to get the fulfillment set with service_zones for shipping option creation
-    const fulfillmentSetWithZones = await fulfillmentModuleService.retrieveFulfillmentSets(
+    const fulfillmentSetWithZones = await fulfillmentModuleService.retrieveFulfillmentSet(
       fulfillmentSet.id
     );
 
@@ -394,21 +394,13 @@ export default async function seedDemoData({ container }: ExecArgs) {
   }
   logger.info("Finished seeding fulfillment data.");
 
-  // Only link if not already linked
-  const stockLocationLinks = await fulfillmentModuleService.retrieveStockLocation(
-    stockLocation.id
-  );
-  if (
-    !stockLocationLinks.sales_channels ||
-    !stockLocationLinks.sales_channels.some((sc: any) => sc.id === defaultSalesChannel[0].id)
-  ) {
-    await linkSalesChannelsToStockLocationWorkflow(container).run({
-      input: {
-        id: stockLocation.id,
-        add: [defaultSalesChannel[0].id],
-      },
-    });
-  }
+  // Link sales channels to stock location (idempotent)
+  await linkSalesChannelsToStockLocationWorkflow(container).run({
+    input: {
+      id: stockLocation.id,
+      add: [defaultSalesChannel[0].id],
+    },
+  });
   logger.info("Finished seeding stock location data.");
 
   logger.info("Seeding publishable API key data...");
