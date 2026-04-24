@@ -334,15 +334,15 @@ export default async function seedDemoData({ container }: ExecArgs) {
 
   logger.info("Seeding publishable API key data...");
   let publishableApiKey: ApiKey | null = null;
-  const { data } = await query.graph({
+  const { data: publishableKeys } = await query.graph({
     entity: "api_key",
-    fields: ["id"],
+    fields: ["id", "token"],
     filters: {
       type: "publishable",
     },
   });
 
-  publishableApiKey = data?.[0];
+  publishableApiKey = publishableKeys?.[0];
 
   if (!publishableApiKey) {
     const {
@@ -369,6 +369,39 @@ export default async function seedDemoData({ container }: ExecArgs) {
     },
   });
   logger.info("Finished seeding publishable API key data.");
+  logger.info(`PUBLISHABLE_API_KEY=${(publishableApiKey as any).token}`);
+
+  logger.info("Seeding admin API key data...");
+  const { data: adminKeys } = await query.graph({
+    entity: "api_key",
+    fields: ["id", "token"],
+    filters: {
+      type: "secret",
+    },
+  });
+
+  let adminApiKey = adminKeys?.[0];
+
+  if (!adminApiKey) {
+    const {
+      result: [adminApiKeyResult],
+    } = await createApiKeysWorkflow(container).run({
+      input: {
+        api_keys: [
+          {
+            title: "Admin",
+            type: "secret",
+            created_by: "",
+          },
+        ],
+      },
+    });
+
+    adminApiKey = adminApiKeyResult as ApiKey;
+  }
+
+  logger.info("Finished seeding admin API key data.");
+  logger.info(`ADMIN_API_TOKEN=${(adminApiKey as any).token}`);
 
   logger.info("Seeding product data...");
 
