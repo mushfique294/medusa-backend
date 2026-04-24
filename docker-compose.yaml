@@ -9,7 +9,7 @@ services:
       redis:
         condition: service_started
     environment:
-      DATABASE_URL: postgres://medusa:medusa@postgres:5432/medusa
+      DATABASE_URL: postgres://medusa:medusa@postgres:5432/medusa?sslmode=disable
       REDIS_URL: redis://redis:6379
       JWT_SECRET: supersecret
       COOKIE_SECRET: supersecret
