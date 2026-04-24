@@ -21,9 +21,7 @@ services:
       echo 'Postgres is ready!' &&
       echo 'Running migrations...' &&
       npx medusa db:migrate &&
-      echo 'Building...' &&
-      npx medusa build &&
-      echo 'Build complete! Starting server...' &&
+      echo 'Migrations complete! Starting server...' &&
       npx medusa start"
     restart: always
     networks:
