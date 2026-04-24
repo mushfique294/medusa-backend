@@ -10,7 +10,7 @@ services:
       DATABASE_URL: ${DATABASE_URL:-postgresql://medusa:medusa@postgres:5432/medusa?sslmode=disable}
       JWT_SECRET: ${JWT_SECRET}
       COOKIE_SECRET: ${COOKIE_SECRET}
-      NODE_ENV: ${NODE_ENV:-production}
+      NODE_ENV: development
       HOST: 0.0.0.0
       PORT: 9000
     command: sh -c "
