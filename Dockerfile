@@ -2,11 +2,14 @@ FROM node:20
 
 WORKDIR /app
 
-COPY package.json pnpm-lock.yaml ./
-RUN npm install -g pnpm && pnpm install
+COPY package.json package-lock.json ./
+
+RUN npm install
 
 COPY . .
 
+RUN npm run build
+
 EXPOSE 9000
 
-CMD ["npx", "medusa", "start"]
+CMD ["npm", "run", "start"]
