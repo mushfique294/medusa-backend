@@ -15,7 +15,7 @@ services:
       COOKIE_SECRET: supersecret
       NODE_ENV: production
       MEDUSA_DISABLE_ADMIN: true
-    command: sh -c "npx medusa db:migrate && npx medusa exec ./src/scripts/seed.ts && npx medusa start"
+    command: sh -c "npx medusa db:migrate && npx medusa start"
 
   postgres:
     image: postgres:15
