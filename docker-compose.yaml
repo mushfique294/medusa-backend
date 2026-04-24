@@ -6,18 +6,26 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
-        condition: service_started
     environment:
-      DATABASE_URL: postgresql://medusa:medusa@postgres:5432/medusa?ssl=false
-      REDIS_URL: redis://redis:6379
-      JWT_SECRET: supersecret
-      COOKIE_SECRET: supersecret
-      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL:-postgresql://medusa:medusa@postgres:5432/medusa?sslmode=disable}
+      JWT_SECRET: ${JWT_SECRET}
+      COOKIE_SECRET: ${COOKIE_SECRET}
+      NODE_ENV: ${NODE_ENV:-production}
       HOST: 0.0.0.0
       PORT: 9000
-      MEDUSA_DISABLE_ADMIN: true
-    command: sh -c "sleep 10 && npx medusa db:migrate && npx medusa start"
+    command: sh -c "
+      echo 'Waiting for Postgres...' &&
+      until pg_isready -h postgres -p 5432 -U medusa; do
+        sleep 2;
+      done &&
+      echo 'Postgres is ready!' &&
+      echo 'Running migrations...' &&
+      npx medusa db:migrate &&
+      echo 'Building...' &&
+      npx medusa build &&
+      echo 'Build complete! Starting server...' &&
+      npx medusa start"
+    restart: always
     networks:
       - medusa-net
 
@@ -25,27 +33,22 @@ services:
     image: postgres:15
     restart: always
     environment:
-      POSTGRES_USER: medusa
-      POSTGRES_PASSWORD: medusa
-      POSTGRES_DB: medusa
+      POSTGRES_USER: ${DB_USER:-medusa}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-medusa}
+      POSTGRES_DB: ${DB_NAME:-medusa}
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U medusa"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-medusa}"]
       interval: 5s
       timeout: 5s
       retries: 5
     networks:
       - medusa-net
 
-  redis:
-    image: redis:7
-    restart: always
-    networks:
-      - medusa-net
-
 volumes:
   pgdata:
+    driver: local
 
 networks:
   medusa-net:
