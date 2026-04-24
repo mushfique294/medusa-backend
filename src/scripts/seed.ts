@@ -1011,26 +1011,33 @@ export default async function seedDemoData({ container }: ExecArgs) {
 
   logger.info("Seeding inventory levels.");
 
-  const { data: inventoryItems } = await query.graph({
-    entity: "inventory_item",
-    fields: ["id"],
-  });
+  // Only create inventory levels if we just created products
+  if (!existingProducts.data || existingProducts.data.length === 0) {
+    const { data: inventoryItems } = await query.graph({
+      entity: "inventory_item",
+      fields: ["id"],
+    });
 
-  const inventoryLevels: CreateInventoryLevelInput[] = [];
-  for (const inventoryItem of inventoryItems) {
-    const inventoryLevel = {
-      location_id: stockLocation.id,
-      stocked_quantity: 1000000,
-      inventory_item_id: inventoryItem.id,
-    };
-    inventoryLevels.push(inventoryLevel);
+    const inventoryLevels: CreateInventoryLevelInput[] = [];
+    for (const inventoryItem of inventoryItems) {
+      const inventoryLevel = {
+        location_id: stockLocation.id,
+        stocked_quantity: 1000000,
+        inventory_item_id: inventoryItem.id,
+      };
+      inventoryLevels.push(inventoryLevel);
+    }
+
+    if (inventoryLevels.length > 0) {
+      await createInventoryLevelsWorkflow(container).run({
+        input: {
+          inventory_levels: inventoryLevels,
+        },
+      });
+    }
+  } else {
+    logger.info("Products already exist, skipping inventory level creation.");
   }
-
-  await createInventoryLevelsWorkflow(container).run({
-    input: {
-      inventory_levels: inventoryLevels,
-    },
-  });
 
   logger.info("Finished seeding inventory levels data.");
 }
