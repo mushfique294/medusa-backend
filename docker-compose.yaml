@@ -1,0 +1,32 @@
+services:
+  medusa:
+    build: .
+    container_name: medusa_backend
+    ports:
+      - "9000:9000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+  postgres:
+    image: postgres:15
+    container_name: medusa_db
+    restart: always
+    environment:
+      POSTGRES_USER: medusa
+      POSTGRES_PASSWORD: medusa
+      POSTGRES_DB: medusa
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U medusa"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    container_name: medusa_redis
