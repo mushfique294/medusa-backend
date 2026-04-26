@@ -14,14 +14,14 @@ module.exports = defineConfig({
     }
   },
   admin: {
-    vite: {
-      server: {
-        allowedHosts: [
-          "localhost",
-          "127.0.0.1",
-          "medusa-f6okof-431975-157-245-205-206.traefik.me"
-        ]
-      }
-    } as any
+    vite: (config) => {
+      config.server = config.server || {}
+      config.server.allowedHosts = [
+        "localhost",
+        "127.0.0.1",
+        "medusa-f6okof-431975-157-245-205-206.traefik.me"
+      ]
+      return config
+    }
   }
 })
