@@ -31,7 +31,7 @@ services:
       echo 'Seeding data...' &&
       npx medusa exec ./src/scripts/seed.ts &&
       echo 'Seed complete! Starting server...' &&
-      npx medusa start"
+      npx medusa start --host 0.0.0.0"
     restart: always
     networks:
       - medusa-net
