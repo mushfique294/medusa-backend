@@ -12,4 +12,4 @@ COPY . .
 
 EXPOSE 9000
 
-CMD ["npx", "medusa", "start"]
+CMD ["npx", "medusa", "start", "--host", "0.0.0.0"]
