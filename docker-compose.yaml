@@ -3,6 +3,12 @@ services:
     build: .
     ports:
       - "9000:9000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.medusa.rule=Host(`medusa-f6okof-431975-157-245-205-206.traefik.me`)"
+      - "traefik.http.routers.medusa.entrypoints=web,websecure"
+      - "traefik.http.services.medusa.loadbalancer.server.port=9000"
+      - "traefik.http.routers.medusa.tls=true"
     depends_on:
       postgres:
         condition: service_healthy
