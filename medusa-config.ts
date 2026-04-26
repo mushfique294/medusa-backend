@@ -12,5 +12,14 @@ module.exports = defineConfig({
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     }
+  },
+  admin: {
+    vite: {
+      allowedHosts: [
+        "localhost",
+        "127.0.0.1",
+        "medusa-f6okof-431975-157-245-205-206.traefik.me"
+      ]
+    }
   }
 })
