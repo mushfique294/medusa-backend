@@ -21,7 +21,11 @@ module.exports = defineConfig({
         "127.0.0.1",
         "medusa-f6okof-431975-157-245-205-206.traefik.me"
       ]
-      config.server.hmr = false
+      config.server.hmr = {
+        host: "medusa-f6okof-431975-157-245-205-206.traefik.me",
+        port: 80,
+        protocol: "ws"
+      }
       return config
     }
   }
