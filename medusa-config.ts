@@ -26,6 +26,10 @@ module.exports = defineConfig({
         port: 80,
         protocol: "ws"
       }
+      config.resolve = config.resolve || {}
+      config.resolve.alias = config.resolve.alias || {}
+      config.resolve.alias["/src"] = "/src"
+      config.resolve.alias["src"] = "/src"
       return config
     }
   }
