@@ -15,11 +15,13 @@ module.exports = defineConfig({
   },
   admin: {
     vite: {
-      allowedHosts: [
-        "localhost",
-        "127.0.0.1",
-        "medusa-f6okof-431975-157-245-205-206.traefik.me"
-      ]
-    }
+      server: {
+        allowedHosts: [
+          "localhost",
+          "127.0.0.1",
+          "medusa-f6okof-431975-157-245-205-206.traefik.me"
+        ]
+      }
+    } as any
   }
 })
